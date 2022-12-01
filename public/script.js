@@ -223,7 +223,7 @@ function refreshList() {
 
         // AFFICHER PERSONNES DE LA ROOM
         let li = document.createElement('li')
-        li.innerHTML = `${element.name} - ${element.position.lat}/${element.position.lng} - ${element.roomId}`
+        li.innerHTML = element.name ? element.name : "Nouvel utilisateur"
         li.style.color = colors[i]
         list.appendChild(li)
         

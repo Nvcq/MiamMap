@@ -122,7 +122,6 @@ io.on('connection', socket => {
         endPointPosition[user.roomId] = data
         
         io.to(user.roomId).emit('newEndPoint', data)
-        
     })
 
     socket.on('changeRoomMeetingDate', (data) => {
@@ -133,6 +132,15 @@ io.on('connection', socket => {
         meetingDate[user.roomId] = data
 
         io.to(user.roomId).emit('newMeetingDate', data)
+
+    })
+
+    socket.on('sendChatMessage', (data) => {
+        user = users.find(user => user.socketId === socket.id)
+
+        if(!user) return
+
+        io.to(user.roomId).emit('newChatMessage', {message: data, sender: user.name})
 
     })
 })

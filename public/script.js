@@ -11,6 +11,9 @@ meetingDate.setHours(meetingDate.getHours() + 2);
 var title = document.getElementsByTagName("h1")[0];
 var subtitle = document.getElementsByTagName("h2")[0];
 const list = document.getElementById('list')
+const chatList = document.getElementById('chatList')
+const chatMessage = document.getElementById('chatMessage')
+const sendMessage = document.getElementById('sendMessage')
 const roomId = document.getElementById('roomId')
 const username = document.getElementById('name')
 let users = []
@@ -57,6 +60,12 @@ function init() {
         })
         
         refreshList()
+    })
+
+    socket.on('newChatMessage', (data) => {
+        let message = document.createElement('li')
+        message.innerHTML = data.sender + ": " + data.message
+        chatList.appendChild(message)
     })
 
     socket.on('newUserRestaurant', (data) => {
@@ -257,3 +266,9 @@ function refreshList() {
         if(i > 6) i = 0
     })
 }
+
+sendMessage.addEventListener('click', () => {
+    if(chatMessage.value && chatMessage.value !== "") {
+        socket.emit('sendChatMessage', chatMessage.value)
+    }
+})

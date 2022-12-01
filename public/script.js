@@ -76,7 +76,7 @@ function setMeetingDate(date) {
 function setGoDate(time) {
     goDate = new Date(meetingDate);
     goDate.setMinutes(goDate.getMinutes() - time);
-    let dateFormatted = date.toLocaleDateString("en-GB", {
+    let dateFormatted = goDate.toLocaleDateString("en-GB", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",

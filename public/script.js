@@ -13,7 +13,7 @@ const list = document.getElementById('list')
 const roomId = document.getElementById('roomId')
 const username = document.getElementById('name')
 let users = []
-let colors = ['red', 'green', 'blue', 'yellow', "purple", 'pink']
+let colors = ['red', 'green', 'blue', 'yellow', "purple", 'pink'] 
 
 function init() {
 

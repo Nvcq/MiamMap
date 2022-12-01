@@ -72,13 +72,13 @@ io.on('connection', socket => {
         })
 
         // TROUVER LE USER QUI A CLICKER
-        user = users.find(user => user.socketId === socket.id)
+        socketUser = users.find(user => user.socketId === socket.id)
 
         // SI ON LE TROUVE PAS RETURN
-        if(!user) return
+        if(!socketUser) return
 
         // ENVOYER L'INFO A SA ROOM
-        io.to(user.roomId).emit('newUserRestaurant', users)
+        io.to(socketUser.roomId).emit('newUserRestaurant', users.filter(user => user.roomId === socketUser.roomId))
     })
 
     socket.on('moveEndPoint', (data) => {

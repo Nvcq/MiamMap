@@ -4,6 +4,7 @@ var nicoPath;
 var userPos;
 var userPath;
 var userPlace;
+var userTime;
 var goDate;
 var meetingDate = new Date();
 meetingDate.setHours(meetingDate.getHours() + 2);
@@ -13,7 +14,7 @@ const list = document.getElementById('list')
 const roomId = document.getElementById('roomId')
 const username = document.getElementById('name')
 let users = []
-let colors = ['red', 'green', 'blue', 'yellow', "purple", 'pink'] 
+let colors = ['red', 'green', 'blue', 'yellow', "purple", 'pink', "orange"] 
 
 function init() {
 
@@ -34,8 +35,13 @@ function init() {
     })
 
     socket.on('init', data => {
+        user = data.users.find(user => user.socketId === socket.id)
+        userPos = user.position
         users = data.users
         eiffelPos = data.endPointPosition ? data.endPointPosition : eiffelPos
+        meetingDate = data.meetingDate ? data.meetingDate : meetingDate
+        userTime = ((map.distance(userPos, eiffelPos) / 1000) / 20) * 60;
+        setGoDate(userTime);
         refreshList()
     })
 
@@ -58,9 +64,15 @@ function init() {
     })
 
     socket.on('newEndPoint', (data) => {
-        console.log(data)
+        userTime = ((map.distance(userPos, eiffelPos) / 1000) / 20) * 60;
         eiffelPos = data
+        setGoDate(userTime);
         refreshList()
+    })
+
+    socket.on('newMeetingDate', (data) => {
+        meetingDate = data
+        setMeetingDate(meetingDate)
     })
 }
 
@@ -136,19 +148,6 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
-// let nicoPos = nicoMarker.getLatLng();
-// let diegoPos = diegoMarker.getLatLng();
-// let simonPos = simonMarker.getLatLng();
-
-// function onMapClick(e) {
-//     popup
-//         .setLatLng(e.latlng)
-//         .setContent("Coordonnées : " + e.latlng.toString())
-//         .openOn(map);
-// }
-
-// map.on('click', onMapClick);
-
 function generateMap() {
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -161,30 +160,15 @@ function generateMap() {
     eiffelMarker = L.marker(eiffelPos, {draggable: 'true', icon: eiffelTower}).addTo(map);
 
     bkMarker.on('click', () => {
-        // userPlace = bkPos;
-        // map.removeLayer(userPath);
-        // userPath = L.polyline([userPos, userPlace, eiffelPos], {color: 'green'}).addTo(map);
-        // userTime = (((map.distance(userPos, userPlace) + map.distance(userPlace, eiffelPos)) / 1000) / 20) * 60;
-        // setGoDate(userTime);
         socket.emit('restaurantClicked', bkPos)
     });
     
     sushiMarker.on('click', () => {
-        // userPlace = sushiPos;
-        // map.removeLayer(userPath);
-        // userPath = L.polyline([userPos, userPlace, eiffelPos], {color: 'green'}).addTo(map);
-        // userTime = (((map.distance(userPos, userPlace) + map.distance(userPlace, eiffelPos)) / 1000) / 20) * 60;
-        // setGoDate(userTime);
         socket.emit('restaurantClicked', sushiPos)
     
     });
     
     indianMarker.on('click', () => {
-        // userPlace = indianPos;
-        // map.removeLayer(userPath);
-        // userPath = L.polyline([userPos, userPlace, eiffelPos], {color: 'green'}).addTo(map);
-        // userTime = (((map.distance(userPos, userPlace) + map.distance(userPlace, eiffelPos)) / 1000) / 20) * 60;
-        // setGoDate(userTime);
         socket.emit('restaurantClicked', indianPos)
     });
 
@@ -193,40 +177,14 @@ function generateMap() {
         eiffelMarker.setLatLng(eiffelPos, {
             draggable: 'true'
         });
-    
-        console.log('gola')
-    
+        
         socket.emit('moveEndPoint', eiffelPos)
-        // setGoDate(userTime);
     });
 }
 
-
-
-// let popup = L.popup();
-
-// function getLocation() {
-//     if (navigator.geolocation) {
-//         navigator.geolocation.getCurrentPosition(showPosition);
-//     } else {
-//         title.innerHTML = "Geolocation is not supported by this browser.";
-//     }
-// }
-
-// function showPosition(position) {
-//     userPos = [position.coords.latitude, position.coords.longitude];
-//     let userMarker = L.marker(userPos, {icon}).addTo(map);
-//     userPath = L.polyline([userPos, eiffelPos], {color: 'green'}).addTo(map);
-//     userTime = ((map.distance(userPos, eiffelPos) / 1000) / 20) * 60;
-//     setGoDate(userTime);
-// }
-
-// getLocation();
-
 document.getElementById('submitDate').addEventListener('click', function() {
-    meetingDate = new Date(document.getElementById('date').value);
-    setMeetingDate(meetingDate);
-    // setGoDate(userTime);
+    let roomMeetingDate = new Date(document.getElementById('date').value);
+    socket.emit('changeRoomMeetingDate', roomMeetingDate)
 });
 
 bkMarker.on('click', () => {
@@ -253,18 +211,19 @@ function refreshList() {
     let i = 0
 
     users.forEach(element => {
-
         // REPLACER LES PERSONNAGES SUR LA MAPS
         L.marker([element.position.lat, element.position.lng], {icon: icon}).addTo(map);
 
         // REPLACER LEURS LIGNES
         if(element.isRestaurant) {
             L.polyline([{lat: element.position.lat, lng: element.position.lng}, element.restaurant.position, eiffelPos], {color: colors[i]}).addTo(map);
+            userTime = (((map.distance(userPos, element.restaurant.position) + map.distance(element.restaurant.position, eiffelPos) )/ 1000) / 20) * 60;
+            setGoDate(userTime);
         }
 
         // AFFICHER PERSONNES DE LA ROOM
         let li = document.createElement('li')
-        li.innerHTML = `${element.name} - ${element.position.lat}/${element.position.lng} - ${element.roomId}`
+        li.innerHTML = element.name ? element.name : "Nouvel utilisateur"
         li.style.color = colors[i]
         list.appendChild(li)
         

@@ -140,7 +140,15 @@ io.on('connection', socket => {
 
         if(!user) return
 
-        io.to(user.roomId).emit('newChatMessage', {message: data, sender: user.name})
+        if(data.split(" ")[0] === "/settime" && data.split(" ").length === 2 && +data.split(" ")[1] && +data.split(" ")[1] <= 24) {
+            let date = new Date()
+            date.setHours(+data.split(" ")[1])
+            date.setMinutes(0)
+            io.to(user.roomId).emit('newMeetingDate', date)
+        } else {
+            io.to(user.roomId).emit('newChatMessage', {message: data, sender: user.name})
+        }
+
 
     })
 })

@@ -65,7 +65,7 @@ function init() {
 }
 
 function setMeetingDate(date) {
-    const dateFormatted = date.toLocaleDateString("en-GB", {
+    let dateFormatted = date.toLocaleDateString("en-GB", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -76,7 +76,12 @@ function setMeetingDate(date) {
 function setGoDate(time) {
     goDate = new Date(meetingDate);
     goDate.setMinutes(goDate.getMinutes() - time);
-    subtitle.innerHTML = "Tu dois partir à " + goDate; 
+    let dateFormatted = date.toLocaleDateString("en-GB", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    })
+    subtitle.innerHTML = "Tu dois partir le " + dateFormatted + " à " + (goDate.getHours() < 10 ? "0" + goDate.getHours() : goDate.getHours()) + "h" + (goDate.getMinutes() < 10 ? "0" + goDate.getMinutes() : goDate.getMinutes());
     return goDate;
 }
 

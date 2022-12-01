@@ -145,6 +145,7 @@ io.on('connection', socket => {
             date.setHours(+data.split(" ")[1])
             date.setMinutes(0)
             io.to(user.roomId).emit('newMeetingDate', date)
+            meetingDate[user.roomId] = date
         } else {
             io.to(user.roomId).emit('newChatMessage', {message: data, sender: user.name})
         }

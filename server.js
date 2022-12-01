@@ -97,8 +97,6 @@ io.on('connection', socket => {
     })
 
     socket.on('changeRoomMeetingDate', (data) => {
-        console.log(data)
-
         user = users.find(user => user.socketId === socket.id)
 
         if(!user) return

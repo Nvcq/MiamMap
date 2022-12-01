@@ -59,7 +59,6 @@ function init() {
     })
 
     socket.on('newUserRestaurant', (data) => {
-        console.log(data)
         users = data
         refreshList()
     })
@@ -219,7 +218,6 @@ function refreshList() {
         if(element.isRestaurant) {
             L.polyline([{lat: element.position.lat, lng: element.position.lng}, element.restaurant.position, eiffelPos], {color: colors[i]}).addTo(map);
             userTime = (((map.distance(userPos, element.restaurant.position) + map.distance(element.restaurant.position, eiffelPos) )/ 1000) / 20) * 60;
-            console.log(userTime)
             setGoDate(userTime);
         }
 

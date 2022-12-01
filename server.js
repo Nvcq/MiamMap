@@ -84,6 +84,35 @@ io.on('connection', socket => {
         io.to(socketUser.roomId).emit('newUserRestaurant', users.filter(user => user.roomId === socketUser.roomId))
     })
 
+    socket.on('endPointCliked', () => {
+        // MODIFIE LE USER AVEC SON RESTAURANT
+        users = users.map(user => {
+            if(user.socketId === socket.id) {
+                return { 
+                    ...user, 
+                    isRestaurant: false, 
+                    restaurant: { 
+                        position: { 
+                            lat: null, 
+                            lng: null,
+                        } 
+                    }
+                }
+            } else {
+                return user
+            }
+        })
+        
+        // TROUVER LE USER QUI A CLICKER
+        socketUser = users.find(user => user.socketId === socket.id)
+
+        // SI ON LE TROUVE PAS RETURN
+        if(!socketUser) return
+
+        // ENVOYER L'INFO A SA ROOM
+        io.to(socketUser.roomId).emit('removeRestaurantUser', users.filter(user => user.roomId === socketUser.roomId))
+    })
+
     socket.on('moveEndPoint', (data) => {
         // TROUVER LE USER QUI A BOUGER LE POINT
         user = users.find(user => user.socketId === socket.id)

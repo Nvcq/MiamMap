@@ -65,7 +65,12 @@ function init() {
 }
 
 function setMeetingDate(date) {
-    title.innerHTML = "On mange le " + date;
+    const dateFormatted = date.toLocaleDateString("en-GB", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    })
+    title.innerHTML = "RDV le " + dateFormatted + " à " + (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + "h" + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes());
 }
 
 function setGoDate(time) {

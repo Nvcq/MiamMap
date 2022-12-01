@@ -7,6 +7,7 @@ var port = 8080
 
 let users = []
 let endPointPosition = []
+let meetingDate = []
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/index.html")
@@ -31,7 +32,10 @@ io.on('connection', socket => {
         users.push({...data, socketId: socket.id})
 
         // ENVOYER LES INFO DE LA ROOM AU USER
-        socket.emit('init', {users: users.filter(user => user.roomId === data.roomId), endPointPosition: endPointPosition[data.roomId]})
+        socket.emit('init', {
+            users: users.filter(user => user.roomId === data.roomId), 
+            endPointPosition: endPointPosition[data.roomId], 
+            meetingDate: endPointPosition[data.roomId]})
     })
 
     socket.on('disconnect', () => {
@@ -52,7 +56,6 @@ io.on('connection', socket => {
     })
 
     socket.on('restaurantClicked', (data) => {
-
         // MODIFIE LE USER AVEC SON RESTAURANT
         users = users.map(user => {
             if(user.socketId === socket.id) {
@@ -70,7 +73,7 @@ io.on('connection', socket => {
                 return user
             }
         })
-
+        
         // TROUVER LE USER QUI A CLICKER
         socketUser = users.find(user => user.socketId === socket.id)
 
@@ -91,6 +94,19 @@ io.on('connection', socket => {
         
         io.to(user.roomId).emit('newEndPoint', data)
         
+    })
+
+    socket.on('changeRoomMeetingDate', (data) => {
+        console.log(data)
+
+        user = users.find(user => user.socketId === socket.id)
+
+        if(!user) return
+
+        meetingDate[user.roomId] = data
+
+        io.to(user.roomId).emit('newMeetingDate', data)
+
     })
 })
 

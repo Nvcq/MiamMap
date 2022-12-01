@@ -6,7 +6,7 @@ var path = require('path')
 var port = 8080
 
 let users = []
-let endPointPosition = null
+let endPointPosition = []
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/index.html")
@@ -18,20 +18,20 @@ app.use(express.static(path.join(__dirname, 'img')))
 
 io.on('connection', socket => {
     socket.on('joinRoom', data => {
-        // CONSOLE LOG NEW USER
+        // CONSOLE LOG NOUVELLE CONNEXION
         console.log(data.name + " join (" + socket.id + ")")
 
-        // ENVOIS A LA ROOM L'INFO DU NEW USER
+        // ENVOIS A LA ROOM L'INFO DU NOUVEL USER
         io.to(`${data.roomId}`).emit('userJoin', {...data, socketId: socket.id})
 
-        // NEW USER REJOINS LA ROOM
+        // NOUVEL USER REJOINT LA ROOM
         socket.join(`${data.roomId}`)
 
-        // NEW USER AJOUTE AU GROUPE
+        // NOUVEL USER AJOUTE AU GROUPE
         users.push({...data, socketId: socket.id})
 
-        // INIT NEW USER
-        socket.emit('init', {users: users.filter(user => user.roomId === data.roomId), endPointPosition})
+        // ENVOYER LES INFO DE LA ROOM AU USER
+        socket.emit('init', {users: users.filter(user => user.roomId === data.roomId), endPointPosition: endPointPosition[data.roomId]})
     })
 
     socket.on('disconnect', () => {
@@ -82,12 +82,13 @@ io.on('connection', socket => {
     })
 
     socket.on('moveEndPoint', (data) => {
-        endPointPosition = data
         // TROUVER LE USER QUI A BOUGER LE POINT
         user = users.find(user => user.socketId === socket.id)
-
+        
         if(!user) return
-
+        
+        endPointPosition[user.roomId] = data
+        
         io.to(user.roomId).emit('newEndPoint', data)
         
     })

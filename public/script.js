@@ -40,7 +40,7 @@ function init() {
         users = data.users
         eiffelPos = data.endPointPosition ? data.endPointPosition : eiffelPos
         meetingDate = data.meetingDate ? data.meetingDate : meetingDate
-        userTime = ((map.distance(userPos, eiffelPos) / 1000) / 20) * 60;
+        userTime = ((map.distance(userPos, eiffelPos) / 1000) / 15) * 60;
         setGoDate(userTime);
         refreshList()
     })
@@ -64,7 +64,7 @@ function init() {
     })
 
     socket.on('newEndPoint', (data) => {
-        userTime = ((map.distance(userPos, eiffelPos) / 1000) / 20) * 60;
+        userTime = ((map.distance(userPos, eiffelPos) / 1000) / 15) * 60;
         eiffelPos = data
         setGoDate(userTime);
         refreshList()
@@ -93,7 +93,7 @@ function setGoDate(time) {
         month: "2-digit",
         day: "2-digit",
     })
-    subtitle.innerHTML = "Tu dois partir le " + dateFormatted + " à " + (goDate.getHours() < 10 ? "0" + goDate.getHours() : goDate.getHours()) + "h" + (goDate.getMinutes() < 10 ? "0" + goDate.getMinutes() : goDate.getMinutes());
+    subtitle.innerHTML = "Tu dois partir le " + dateFormatted + " à <b>" + (goDate.getHours() < 10 ? "0" + goDate.getHours() : goDate.getHours()) + "h" + (goDate.getMinutes() < 10 ? "0" + goDate.getMinutes() : goDate.getMinutes()) + "</b> (trajet de " + Math.ceil(time) + "min)";
     return goDate;
 }
 
@@ -217,7 +217,7 @@ function refreshList() {
         // REPLACER LEURS LIGNES
         if(element.isRestaurant) {
             L.polyline([{lat: element.position.lat, lng: element.position.lng}, element.restaurant.position, eiffelPos], {color: colors[i]}).addTo(map);
-            userTime = (((map.distance(userPos, element.restaurant.position) + map.distance(element.restaurant.position, eiffelPos) )/ 1000) / 20) * 60;
+            userTime = (((map.distance(userPos, element.restaurant.position) + map.distance(element.restaurant.position, eiffelPos) )/ 1000) / 15) * 60;
             setGoDate(userTime);
         }
 

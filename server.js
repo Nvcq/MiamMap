@@ -35,7 +35,7 @@ io.on('connection', socket => {
         socket.emit('init', {
             users: users.filter(user => user.roomId === data.roomId), 
             endPointPosition: endPointPosition[data.roomId], 
-            meetingDate: endPointPosition[data.roomId]})
+            meetingDate: meetingDate[data.roomId]})
     })
 
     socket.on('disconnect', () => {

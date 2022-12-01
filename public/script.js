@@ -41,6 +41,7 @@ function init() {
         eiffelPos = data.endPointPosition ? data.endPointPosition : eiffelPos
         meetingDate = data.meetingDate ? data.meetingDate : meetingDate
         userTime = ((map.distance(userPos, eiffelPos) / 1000) / 15) * 60;
+        setMeetingDate(meetingDate)
         setGoDate(userTime);
         refreshList()
     })
@@ -78,16 +79,18 @@ function init() {
     socket.on('newMeetingDate', (data) => {
         meetingDate = data
         setMeetingDate(meetingDate)
+        refreshList()
     })
 }
 
 function setMeetingDate(date) {
-    let dateFormatted = date.toLocaleDateString("en-GB", {
+    goDate = new Date(date);
+    let dateFormatted = goDate.toLocaleDateString("en-GB", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
     })
-    title.innerHTML = "RDV le " + dateFormatted + " à " + (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + "h" + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes());
+    title.innerHTML = "RDV le " + dateFormatted + " à " + (goDate.getHours() < 10 ? "0" + goDate.getHours() : goDate.getHours()) + "h" + (goDate.getMinutes() < 10 ? "0" + goDate.getMinutes() : goDate.getMinutes());
 }
 
 function setGoDate(time) {
@@ -229,12 +232,18 @@ function refreshList() {
         // REPLACER LEURS LIGNES
         if(element.isRestaurant) {
             L.polyline([{lat: element.position.lat, lng: element.position.lng}, element.restaurant.position, eiffelPos], {color: colors[i]}).addTo(map);
-            userTime = (((map.distance(userPos, element.restaurant.position) + map.distance(element.restaurant.position, eiffelPos) )/ 1000) / 15) * 60;
-            setGoDate(userTime);
         } else {
             L.polyline([{lat: element.position.lat, lng: element.position.lng}, eiffelPos], {color: colors[i]}).addTo(map)
-            userTime = ((map.distance({lat: element.position.lat, lng: element.position.lng}, eiffelPos)/ 1000) / 20) * 60;
-            setGoDate(userTime);
+        }
+
+        if(socket.id === element.socketId) {
+            if(element.isRestaurant) {
+                userTime = (((map.distance(userPos, element.restaurant.position) + map.distance(element.restaurant.position, eiffelPos) )/ 1000) / 15) * 60;
+                setGoDate(userTime);
+            } else {
+                userTime = ((map.distance({lat: element.position.lat, lng: element.position.lng}, eiffelPos)/ 1000) / 15) * 60;
+                setGoDate(userTime);
+            }
         }
 
         // AFFICHER PERSONNES DE LA ROOM

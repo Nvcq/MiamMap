@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiamMap</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-    crossorigin=""/>
-</head>
-<body>
-    <h1></h1>
-    <h2></h2>
-    <div id="map"></div>
-    <input type="datetime-local" id="date">
-    <button id="submitDate">Mangez à cette date</button>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MiamMap</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+        crossorigin=""/>
+    </head>
+    <body>
+        <section id="connexion">
+            <input type="text" id="name" placeholder="Nom">
+            <input type="text" id="roomId" placeholder="Id de la room">
+            <input type="button" value="Letsgo" onclick="init()">
+        </section>
 
-     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-     crossorigin=""></script>
-     <script src="script.js"></script>
-</body>
+        <section id="sectionMap">
+            <h1></h1>
+            <h2></h2>
+            <div id="container">
+                <div id="restaurant"></div>
+                <div id="map"></div>
+                <div id="room">
+                    <h3 id="roomTitle">Room : </h3>
+                    <ul id="list">
+
+                    </ul>
+                </div>
+            </div>
+            <input type="datetime-local" id="date">
+            <button id="submitDate">Mangez à cette date</button>
+        </section>
+
+        <script src="socket.io/socket.io.js"></script>
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+        crossorigin=""></script>
+        <script src="script.js"></script>
+    </body>
 </html>

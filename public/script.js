@@ -90,6 +90,8 @@ function init() {
         setMeetingDate(meetingDate)
         refreshList()
     })
+
+    connexion.style.display = 'none'
 }
 
 function setMeetingDate(date) {

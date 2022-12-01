@@ -13,4 +13,6 @@
 
 ## 🎥 Vidéo
 
-- Démo pendant le cours donc pas besoin de vidéo
+- Vu avec toi pour faire la démo pendant le cours à la place de la vidéo
+
+- Toutes les fonctionnalitées réalisées, aucun blocage

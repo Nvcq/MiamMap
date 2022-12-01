@@ -63,6 +63,11 @@ function init() {
         refreshList()
     })
 
+    socket.on('removeRestaurantUser', (data) => {
+        users = data
+        refreshList()
+    })
+
     socket.on('newEndPoint', (data) => {
         userTime = ((map.distance(userPos, eiffelPos) / 1000) / 15) * 60;
         eiffelPos = data
@@ -172,6 +177,10 @@ function generateMap() {
         socket.emit('restaurantClicked', indianPos)
     });
 
+    eiffelMarker.on('click', () => {
+        socket.emit('endPointCliked')
+    });
+
     eiffelMarker.on('dragend', () => {
         eiffelPos = eiffelMarker.getLatLng();
         eiffelMarker.setLatLng(eiffelPos, {
@@ -198,7 +207,10 @@ sushiMarker.on('click', () => {
 
 indianMarker.on('click', () => {
     socket.emit('restaurantClicked', indianPos)
+});
 
+eiffelMarker.on('click', () => {
+    socket.emit('endPointCliked')
 });
 
 function refreshList() {
@@ -219,14 +231,20 @@ function refreshList() {
             L.polyline([{lat: element.position.lat, lng: element.position.lng}, element.restaurant.position, eiffelPos], {color: colors[i]}).addTo(map);
             userTime = (((map.distance(userPos, element.restaurant.position) + map.distance(element.restaurant.position, eiffelPos) )/ 1000) / 15) * 60;
             setGoDate(userTime);
+        } else {
+            L.polyline([{lat: element.position.lat, lng: element.position.lng}, eiffelPos], {color: colors[i]}).addTo(map)
+            userTime = ((map.distance({lat: element.position.lat, lng: element.position.lng}, eiffelPos)/ 1000) / 20) * 60;
+            setGoDate(userTime);
         }
 
         // AFFICHER PERSONNES DE LA ROOM
         let li = document.createElement('li')
-        li.innerHTML = element.name ? element.name : "Nouvel utilisateur"
+        li.innerHTML = element.name ? element.name : "Anonyme"
         li.style.color = colors[i]
         list.appendChild(li)
         
         i++
+
+        if(i > 6) i = 0
     })
 }

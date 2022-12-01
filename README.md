@@ -10,3 +10,7 @@
 - Commande disponible dans le chat : *"/settime heure"*
   
   Ex: "/settime 14" -> change la date du RDV à 14h
+
+## 🎥 Vidéo
+
+- Démo pendant le cours donc pas besoin de vidéo
